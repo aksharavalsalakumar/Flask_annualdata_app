@@ -4,10 +4,11 @@ import sqlite3
 
 app = Flask(__name__)
 
+# To get the db connection
 def get_db_connection():
     return sqlite3.connect('database.db')
 
-
+#To create the annualdata table in db
 def setup_database():
     with get_db_connection() as conn:
         conn.execute("""
@@ -20,7 +21,7 @@ def setup_database():
         """)
         conn.commit()
 
-
+#To calculate the annual data and add the result to db
 def load_data():
     df = pd.read_excel("data.xls").groupby("API WELL  NUMBER")[['OIL', 'GAS', 'BRINE']].sum().reset_index()
     data = df.values.tolist()
@@ -34,7 +35,7 @@ def load_data():
         """, data)
         conn.commit()
 
-
+ #To get the details corresponding to a specific api well number.
 @app.route("/data", methods=["GET"])
 def get_well_data():
     api_well_number = request.args.get("well")
